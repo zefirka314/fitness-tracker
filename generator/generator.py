@@ -17,17 +17,15 @@ def generate_data():
     activity = random.choice(activities)
 
     if activity == "rest":
-        steps = 0
         heart_rate = random.randint(55, 70)
-        calories = random.uniform(0.5, 1.5)
     elif activity == "walk":
-        steps = random.randint(20, 60)
-        heart_rate = random.randint(80, 100)
-        calories = random.uniform(3, 6)
+        steps+=random.randint(0, 2)
+        heart_rate=random.randint(80, 100)
+        calories+=random.uniform(3, 6)
     else:
-        steps = random.randint(80, 150)
-        heart_rate = random.randint(120, 160)
-        calories = random.uniform(8, 15)
+        steps+=random.randint(5, 10)
+        heart_rate=random.randint(120, 160)
+        calories+=random.uniform(8, 15)
 
     cursor.execute(
         """
@@ -37,7 +35,9 @@ def generate_data():
         (datetime.now(), steps, heart_rate, calories, activity)
     )
     conn.commit()
-
+    return steps, calories
+steps=0
+calories=0
 while True:
-    generate_data()
+    steps, calories=generate_data(steps, calories)
     time.sleep(1)
