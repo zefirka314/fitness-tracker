@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  fitness-db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: fitness
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redash-db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: redash
+      POSTGRES_USER: redash
+      POSTGRES_PASSWORD: redash
+    volumes:
+      - redash_db_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+
+  generator:
+    build: ./generator
+    depends_on:
+      - fitness-db
+
+  redash-server:
+    image: redash/redash:latest
+    command: server
+    environment:
+      REDASH_DATABASE_URL: postgres://redash:redash@redash-db:5432/redash
+      REDASH_REDIS_URL: redis://redis:6379/0
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redash-db
+      - redis
+
+  redash-worker:
+    image: redash/redash:latest
+    command: worker
+    environment:
+      REDASH_DATABASE_URL: postgres://redash:redash@redash-db:5432/redash
+      REDASH_REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - redash-db
+      - redis
+
+volumes:
+  redash_db_data:
