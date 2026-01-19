@@ -12,18 +12,17 @@ conn = psycopg2.connect(
 cursor = conn.cursor()
 
 activities = ["rest", "walk", "run"]
-
-def generate_data():
+def generate_data(steps, calories):
     activity = random.choice(activities)
-
     if activity == "rest":
         heart_rate = random.randint(55, 70)
+        calories+=random.uniform(0.5, 1.5)
     elif activity == "walk":
-        steps+=random.randint(0, 2)
+        steps+=random.randint(20, 60)
         heart_rate=random.randint(80, 100)
         calories+=random.uniform(3, 6)
     else:
-        steps+=random.randint(5, 10)
+        steps+=random.randint(80, 150)
         heart_rate=random.randint(120, 160)
         calories+=random.uniform(8, 15)
 
